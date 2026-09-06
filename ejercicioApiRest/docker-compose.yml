@@ -1,0 +1,88 @@
+services:
+  users_db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: UsersDatabase
+    volumes:
+      - users_db_data:/var/lib/mysql
+      - ./db/users.sql:/docker-entrypoint-initdb.d/users.sql:ro
+    ports:
+      - "33061:3306"
+
+  products_db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ProductsDatabase
+    volumes:
+      - products_db_data:/var/lib/mysql
+      - ./db/products.sql:/docker-entrypoint-initdb.d/products.sql:ro
+    ports:
+      - "33062:3306"
+
+  orders_db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: OrdersDatabase
+    volumes:
+      - orders_db_data:/var/lib/mysql
+      - ./db/orders.sql:/docker-entrypoint-initdb.d/orders.sql:ro
+    ports:
+      - "33063:3306"
+
+  consul:
+    image: consul:1.15
+    ports:
+      - "8500:8500"
+    command: agent -dev -client=0.0.0.0
+
+  users:
+    build: ./microUsers
+    env_file: ./microUsers/.env
+    depends_on:
+      - users_db
+      - consul
+    environment:
+      CONSUL_HTTP_ADDR: consul:8500
+    ports:
+      - "5002:5002"
+
+  products:
+    build: ./microProducts
+    env_file: ./microProducts/.env
+    depends_on:
+      - products_db
+      - consul
+    environment:
+      CONSUL_HTTP_ADDR: consul:8500
+    ports:
+      - "5003:5003"
+
+  orders:
+    build: ./microOrdenes
+    env_file: ./microOrdenes/.env
+    depends_on:
+      - orders_db
+      - consul
+      - products
+    environment:
+      CONSUL_HTTP_ADDR: consul:8500
+    ports:
+      - "5004:5004"
+
+  frontend:
+    build: ./frontend
+    env_file: ./frontend/.env
+    depends_on:
+      - users
+      - products
+      - orders
+    ports:
+      - "5001:5001"
+
+volumes:
+  users_db_data:
+  products_db_data:
+  orders_db_data:

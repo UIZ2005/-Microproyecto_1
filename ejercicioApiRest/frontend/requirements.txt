@@ -1,0 +1,5 @@
+Flask==2.3.3
+Flask-Cors
+Flask-Consulate
+python-dotenv
+six

@@ -1,0 +1,8 @@
+Flask==2.3.3
+Flask-Cors
+Flask-SQLAlchemy
+Flask-Consulate
+PyMySQL
+six
+python-dotenv
+requests
