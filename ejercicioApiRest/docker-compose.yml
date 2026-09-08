@@ -42,8 +42,10 @@ services:
     build: ./microUsers
     env_file: ./microUsers/.env
     depends_on:
-      - users_db
-      - consul
+      users_db:
+        condition: service_healthy
+      consul:
+        condition: service_started
     environment:
       CONSUL_HTTP_ADDR: consul:8500
     ports:
@@ -53,8 +55,10 @@ services:
     build: ./microProducts
     env_file: ./microProducts/.env
     depends_on:
-      - products_db
-      - consul
+      products_db:
+        condition: service_healthy
+      consul:
+        condition: service_started
     environment:
       CONSUL_HTTP_ADDR: consul:8500
     ports:
@@ -64,9 +68,12 @@ services:
     build: ./microOrdenes
     env_file: ./microOrdenes/.env
     depends_on:
-      - orders_db
-      - consul
-      - products
+      orders_db:
+        condition: service_healthy
+      consul:
+        condition: service_started
+      products:
+        condition: service_started
     environment:
       CONSUL_HTTP_ADDR: consul:8500
     ports:

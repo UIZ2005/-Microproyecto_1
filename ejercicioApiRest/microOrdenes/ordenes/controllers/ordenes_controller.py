@@ -130,7 +130,7 @@ def create_order():
             price = Decimal(str(product['price']))
             product_data.append((product_id, quantity, product, price))
     except (requests.RequestException, RuntimeError, ValueError, KeyError, InvalidOperation):
-        return jsonify({'message': 'No fue posible consultar el servicio de Productos'}), 502
+        return jsonify({'message': 'No fue posible consultar el servicio de Productos'}), 500
 
     total = sum((quantity * price for _, quantity, _, price in product_data), Decimal('0.00'))
     updated_products = []
@@ -170,7 +170,7 @@ def create_order():
         db.session.commit()
     except (requests.RequestException, RuntimeError, KeyError, ValueError, InvalidOperation):
         db.session.rollback()
-        return jsonify({'message': 'No fue posible actualizar el inventario en Productos'}), 502
+        return jsonify({'message': 'No fue posible actualizar el inventario en Productos'}), 500
     except Exception:
         db.session.rollback()
         return jsonify({'message': 'No fue posible crear la orden'}), 500
