@@ -1,5 +1,5 @@
-const ORDERS_API = 'http://localhost:5004';
-const PRODUCTS_API = 'http://localhost:5003';
+const ORDERS_API = 'http://192.168.100.3:5004';
+const PRODUCTS_API = 'http://192.168.100.3:5003';
 let productsCatalog = [];
 
 function getProducts() {

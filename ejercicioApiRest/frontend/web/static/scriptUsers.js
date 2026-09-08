@@ -1,5 +1,5 @@
 function getUsers() {
-    fetch('http://localhost:5002/api/users', {credentials: 'include'})
+    fetch('http://192.168.100.3:5002/api/users', {credentials: 'include'})
         .then(response => response.json())
         .then(data => {
             // Handle data
@@ -70,7 +70,7 @@ function createUser() {
         return;
     }
 
-    fetch('http://localhost:5002/api/users', {
+    fetch('http://192.168.100.3:5002/api/users', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ function updateUser() {
         return;
     }
 
-    fetch(`http://localhost:5002/api/users/${userId}`, {
+    fetch(`http://192.168.100.3:5002/api/users/${userId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ function updateUser() {
 function deleteUser(userId) {
     console.log('Deleting user with ID:', userId);
     if (confirm('Are you sure you want to delete this user?')) {
-        fetch(`http://localhost:5002/api/users/${userId}`, {
+        fetch(`http://192.168.100.3:5002/api/users/${userId}`, {
             method: 'DELETE',
             credentials: 'include',
         })

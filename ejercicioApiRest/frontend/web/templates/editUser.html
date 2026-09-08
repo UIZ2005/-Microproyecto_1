@@ -42,7 +42,7 @@
     //const userId = urlParams.get('id');
     const userId = {{id}}    
     // Obtener la información del usuario y llenar el formulario
-    fetch(`http://localhost:5002/api/users/${userId}`)
+    fetch(`http://192.168.100.3:5002/api/users/${userId}`)
         .then(response => response.json())
         .then(data => {
             document.getElementById('user-id').value = data.id;

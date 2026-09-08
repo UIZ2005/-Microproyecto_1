@@ -1,5 +1,5 @@
 function getProducts() {
-fetch('http://localhost:5003/api/products', {credentials: 'include'})
+fetch('http://192.168.100.3:5003/api/products', {credentials: 'include'})
 
 .then(response => response.json())
 
@@ -96,7 +96,7 @@ if (Number(data.price) < 0 || Number(data.stock) < 0) {
     return;
 }
 
-fetch('http://localhost:5003/api/products', {
+fetch('http://192.168.100.3:5003/api/products', {
 
     method: 'POST',
 
@@ -164,7 +164,7 @@ if (Number(data.price) < 0 || Number(data.stock) < 0) {
     return;
 }
 
-fetch(`http://localhost:5003/api/products/${productId}`, {
+fetch(`http://192.168.100.3:5003/api/products/${productId}`, {
 
     method: 'PUT',
 
@@ -209,7 +209,7 @@ console.log('Deleting product with ID:', productId);
 
 if (confirm('Are you sure you want to delete this product?')) {
 
-    fetch(`http://localhost:5003/api/products/${productId}`, {
+    fetch(`http://192.168.100.3:5003/api/products/${productId}`, {
 
         method: 'DELETE',
         credentials: 'include',
