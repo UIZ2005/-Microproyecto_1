@@ -9,6 +9,11 @@ services:
       - ./db/users.sql:/docker-entrypoint-initdb.d/users.sql:ro
     ports:
       - "33061:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   products_db:
     image: mysql:8.0
@@ -20,6 +25,11 @@ services:
       - ./db/products.sql:/docker-entrypoint-initdb.d/products.sql:ro
     ports:
       - "33062:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   orders_db:
     image: mysql:8.0
@@ -31,12 +41,22 @@ services:
       - ./db/orders.sql:/docker-entrypoint-initdb.d/orders.sql:ro
     ports:
       - "33063:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   consul:
     image: consul:1.15
     ports:
       - "8500:8500"
     command: agent -dev -client=0.0.0.0
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   users:
     build: ./microUsers
@@ -45,11 +65,16 @@ services:
       users_db:
         condition: service_healthy
       consul:
-        condition: service_started
+        condition: service_healthy
     environment:
       CONSUL_HTTP_ADDR: consul:8500
     ports:
       - "5002:5002"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5002/healthcheck')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   products:
     build: ./microProducts
@@ -58,11 +83,16 @@ services:
       products_db:
         condition: service_healthy
       consul:
-        condition: service_started
+        condition: service_healthy
     environment:
       CONSUL_HTTP_ADDR: consul:8500
     ports:
       - "5003:5003"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5003/healthcheck')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   orders:
     build: ./microOrdenes
@@ -71,23 +101,36 @@ services:
       orders_db:
         condition: service_healthy
       consul:
-        condition: service_started
+        condition: service_healthy
       products:
-        condition: service_started
+        condition: service_healthy
     environment:
       CONSUL_HTTP_ADDR: consul:8500
     ports:
       - "5004:5004"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5004/healthcheck')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   frontend:
     build: ./frontend
     env_file: ./frontend/.env
     depends_on:
-      - users
-      - products
-      - orders
+      users:
+        condition: service_healthy
+      products:
+        condition: service_healthy
+      orders:
+        condition: service_healthy
     ports:
       - "5001:5001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5001/healthcheck')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   users_db_data:
